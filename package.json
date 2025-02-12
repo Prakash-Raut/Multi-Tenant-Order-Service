@@ -11,9 +11,13 @@
 	"description": "Order Management Service",
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"@types/node": "^22.13.1",
 		"typescript": "^5.7.3"
 	},
 	"dependencies": {
+		"@types/config": "^3.3.5",
+		"config": "^3.3.12",
+		"mongoose": "^8.10.0",
 		"winston": "^3.17.0"
 	}
 }
