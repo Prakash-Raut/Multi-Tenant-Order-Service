@@ -3,11 +3,14 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"check": "npx @biomejs/biome check --write ."
 	},
 	"keywords": [],
 	"author": "Prakash Raut <prakash_raut@outlook.com>",
 	"license": "ISC",
-	"description": "Order Management Service"
+	"description": "Order Management Service",
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"typescript": "^5.7.3"
+	}
 }
-
