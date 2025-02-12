@@ -3,7 +3,8 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"check": "npx @biomejs/biome check --write ."
+		"check": "npx @biomejs/biome check --write .",
+		"dev": "cross-env NODE_ENV=development nodemon src/index.ts"
 	},
 	"keywords": [],
 	"author": "Prakash Raut <prakash_raut@outlook.com>",
@@ -11,12 +12,22 @@
 	"description": "Order Management Service",
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"@types/cookie-parser": "^1.4.8",
+		"@types/cors": "^2.8.17",
+		"@types/express": "^5.0.0",
 		"@types/node": "^22.13.1",
+		"nodemon": "^3.1.9",
+		"ts-node": "^10.9.2",
 		"typescript": "^5.7.3"
 	},
 	"dependencies": {
 		"@types/config": "^3.3.5",
 		"config": "^3.3.12",
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.5",
+		"cross-env": "^7.0.3",
+		"express": "^4.21.2",
+		"js-yaml": "^4.1.0",
 		"mongoose": "^8.10.0",
 		"winston": "^3.17.0"
 	}
