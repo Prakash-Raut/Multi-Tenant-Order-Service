@@ -6,6 +6,7 @@
 		"useIgnoreFile": false
 	},
 	"files": {
+		"include": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.mjs"],
 		"ignoreUnknown": false,
 		"ignore": []
 	},

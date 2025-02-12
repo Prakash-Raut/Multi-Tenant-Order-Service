@@ -1,3 +1,3 @@
 export type AuthCookie = {
-  accessToken: string;
+	accessToken: string;
 };

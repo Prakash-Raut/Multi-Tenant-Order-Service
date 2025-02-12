@@ -1,6 +1,6 @@
 import config from "config";
 import type { NextFunction, Request, Response } from "express";
-import { HttpError } from "http-errors";
+import type { HttpError } from "http-errors";
 import { nanoid } from "nanoid";
 import logger from "../config/logger";
 
@@ -8,7 +8,7 @@ export const globalErrorHandler = (
 	err: HttpError,
 	req: Request,
 	res: Response,
-	next: NextFunction
+	next: NextFunction,
 ) => {
 	const errorId = nanoid();
 	const statusCode = err.statusCode || err.status || 500;
@@ -37,4 +37,3 @@ export const globalErrorHandler = (
 		],
 	});
 };
-

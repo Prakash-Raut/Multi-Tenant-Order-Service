@@ -1,9 +1,9 @@
 import config from "config";
-import { Request } from "express";
-import { expressjwt, GetVerificationKey } from "express-jwt";
-import { Jwt } from "jsonwebtoken";
-import jwksClient, { SigningKey } from "jwks-rsa";
-import { AuthCookie } from "../common/types";
+import type { Request } from "express";
+import { type GetVerificationKey, expressjwt } from "express-jwt";
+import type { Jwt } from "jsonwebtoken";
+import jwksClient, { type SigningKey } from "jwks-rsa";
+import type { AuthCookie } from "../common/types";
 
 const client = jwksClient({
 	jwksUri: config.get("auth.jwksUri"),
@@ -38,7 +38,7 @@ const getTokenFromHeaderOrQuerystring = (req: Request) => {
 		if (token) {
 			return token;
 		}
-	} else if (req.query && req.query.token) {
+	} else if (req.query?.token) {
 		return req.query.token as string;
 	}
 
@@ -51,4 +51,3 @@ export default expressjwt({
 	algorithms: ["RS256"],
 	getToken: getTokenFromHeaderOrQuerystring,
 });
-
