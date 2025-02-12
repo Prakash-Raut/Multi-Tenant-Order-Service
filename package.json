@@ -4,7 +4,8 @@
 	"main": "index.js",
 	"scripts": {
 		"check": "npx @biomejs/biome check --write .",
-		"dev": "cross-env NODE_ENV=development nodemon src/index.ts"
+		"dev": "cross-env NODE_ENV=development nodemon src/index.ts",
+		"prepare": "husky"
 	},
 	"keywords": [],
 	"author": "Prakash Raut <prakash_raut@outlook.com>",
@@ -18,9 +19,16 @@
 		"@types/express": "^5.0.0",
 		"@types/http-errors": "^2.0.4",
 		"@types/node": "^22.13.1",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.4.3",
 		"nodemon": "^3.1.9",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.7.3"
+	},
+	"lint-staged": {
+		"*.ts": [
+			"npm run check"
+		]
 	},
 	"dependencies": {
 		"config": "^3.3.12",
