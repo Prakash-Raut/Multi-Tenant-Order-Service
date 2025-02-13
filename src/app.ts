@@ -2,6 +2,7 @@ import config from "config";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { type Request, type Response } from "express";
+import couponRouter from "./coupon/coupon-router";
 import customerRouter from "./customer/customer-router";
 import { globalErrorHandler } from "./middleware/globalErrorHandler";
 
@@ -22,6 +23,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/customers", customerRouter);
+app.use("/coupons", couponRouter);
 
 app.use(globalErrorHandler);
 
