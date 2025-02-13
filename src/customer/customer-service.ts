@@ -11,4 +11,31 @@ export class CustomerService {
 		const customer = await CustomerModel.findOne({ userId });
 		return customer;
 	};
+
+	addAddress = async (customer: AddAddress) => {
+		const updatedCustomerAddress = await CustomerModel.findOneAndUpdate(
+			{
+				_id: customer.customerId,
+				userId: customer.userId,
+			},
+			{
+				$push: {
+					addresses: {
+						text: customer.address,
+					},
+				},
+			},
+			{
+				new: true,
+			},
+		);
+
+		return updatedCustomerAddress;
+	};
+}
+
+interface AddAddress {
+	userId: string;
+	customerId: string;
+	address: string;
 }

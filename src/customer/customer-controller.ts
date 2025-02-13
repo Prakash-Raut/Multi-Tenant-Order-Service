@@ -41,4 +41,23 @@ export class CustomerController {
 		this.logger.info(`Customer found: ${customer?.userId}`);
 		res.json(customer);
 	};
+
+	addAddress = async (req: Request, res: Response, next: NextFunction) => {
+		const { sub: userId } = (req as AuthRequest).auth;
+		const { id: customerId } = req.params;
+		const { address } = req.body;
+
+		const customer = await this.customerService.addAddress({
+			userId,
+			customerId,
+			address,
+		});
+
+		if (!customer) {
+			return next(createHttpError(500, "Failed to add address"));
+		}
+
+		this.logger.info(`Address added to customer: ${userId}`);
+		res.json(customer);
+	};
 }
