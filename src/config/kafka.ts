@@ -1,4 +1,5 @@
 import { type Consumer, type EachMessagePayload, Kafka } from "kafkajs";
+import { handleProductUpdate } from "../cache/product/handleProductUpdate";
 import type { MessageBroker } from "../types/broker";
 
 /**
@@ -53,7 +54,18 @@ export class KafkaBroker implements MessageBroker {
 				partition,
 				message,
 			}: EachMessagePayload) => {
-				// Logix to handle incoming messages
+				if (!message.value) {
+					return;
+				}
+
+				switch (topic) {
+					case "Product":
+						await handleProductUpdate(message.value.toString());
+						return;
+					default:
+						console.log("Do Nothing");
+				}
+
 				console.log({
 					value: message.value?.toString(),
 					topic,
