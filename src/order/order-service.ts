@@ -8,6 +8,8 @@ import {
 } from "../cache/topping/ToppingCacheModel";
 import { CouponModel } from "../coupon/coupon-model";
 import type { CartItem, Topping } from "../types";
+import { OrderModel } from "./order-model";
+import { CreateOrderRequest, type Order } from "./order-type";
 
 export class OrderService {
 	/**
@@ -152,5 +154,10 @@ export class OrderService {
 		}
 
 		return 0;
+	};
+
+	createOrder = async (orderDetails: Order) => {
+		const order = await OrderModel.create(orderDetails);
+		return order;
 	};
 }

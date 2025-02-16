@@ -3,6 +3,11 @@ import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import type { Logger } from "winston";
 import type { OrderService } from "./order-service";
+import {
+	type CreateOrderRequest,
+	OrderStatus,
+	PaymentStatus,
+} from "./order-type";
 
 export class OrderController {
 	constructor(
@@ -16,7 +21,15 @@ export class OrderController {
 			return next(createHttpError(400, result.array()[0].msg as string));
 		}
 
-		const { cart, couponCode, tenantId } = req.body;
+		const {
+			cart,
+			couponCode,
+			tenantId,
+			paymentMode,
+			customerId,
+			comment,
+			address,
+		} = req.body as CreateOrderRequest;
 
 		const totalPrice = await this.orderService.calculateTotal(cart);
 
@@ -43,15 +56,25 @@ export class OrderController {
 
 		const finalTotal = priceAfterDiscount + taxes + DELIVERY_CHARGE;
 
-		this.logger.info("Order created successfully", {});
-
-		res.json({
-			message: "Order created",
-			subtotal: totalPrice,
+		const newOrder = await this.orderService.createOrder({
+			cart,
+			taxes,
+			address,
+			comment,
+			tenantId,
+			customerId,
+			paymentMode,
+			total: finalTotal,
+			deliveryCharges: DELIVERY_CHARGE,
 			discount: discountAmount,
-			tax: taxes,
-			deliveryCharge: DELIVERY_CHARGE,
-			orderTotal: finalTotal,
+			orderStatus: OrderStatus.RECEIVED,
+			paymentStatus: PaymentStatus.PENDING,
 		});
+
+		this.logger.info("Order created successfully", {
+			orderId: newOrder._id,
+		});
+
+		res.json(newOrder);
 	};
 }
