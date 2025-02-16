@@ -31,14 +31,20 @@ export class OrderController {
 
 		const discountAmount = Math.round((totalPrice * discountPercentage) / 100);
 
-		this.logger.info(
-			`Order created with total price: ${totalPrice}, discount: ${discountAmount}`,
-		);
+		const priceAfterDiscount = totalPrice - discountAmount;
+
+		// TODO: May be store in db for each Tenant
+		const TAXES_PERCENTAGE = 18;
+
+		const taxes = Math.round((priceAfterDiscount * TAXES_PERCENTAGE) / 100);
+
+		this.logger.info("Order created successfully", {});
 
 		res.json({
 			message: "Order created",
-			orderTotal: totalPrice,
+			subtotal: totalPrice,
 			discount: discountAmount,
+			tax: taxes,
 		});
 	};
 }
