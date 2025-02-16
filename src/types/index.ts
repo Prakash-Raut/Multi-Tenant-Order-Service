@@ -27,3 +27,8 @@ export interface ProductMessage {
 	id: string;
 	priceConfiguration: ProductPriceConfiguration;
 }
+
+export interface ToppingMessage {
+	id: string;
+	price: number;
+}
