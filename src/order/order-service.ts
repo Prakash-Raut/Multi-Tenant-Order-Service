@@ -6,6 +6,7 @@ import {
 	ToppingCacheModel,
 	type ToppingPricingCache,
 } from "../cache/topping/ToppingCacheModel";
+import { CouponModel } from "../coupon/coupon-model";
 import type { CartItem, Topping } from "./order-type";
 
 export class OrderService {
@@ -125,5 +126,31 @@ export class OrderService {
 		}
 
 		return currentTopping.price;
+	};
+
+	/**
+	 * Calculates the discount percentage for a coupon code.
+	 * @param {string} couponCode - The coupon code
+	 * @param {string} tenantId - The tenant ID
+	 * @returns {Promise<number>} - Discount percentage
+	 */
+	getDiscountPercentage = async (
+		couponCode: string,
+		tenantId: string,
+	): Promise<number> => {
+		const code = await CouponModel.findOne({ code: couponCode, tenantId });
+
+		if (!code) {
+			return 0;
+		}
+
+		const currentDate = new Date();
+		const couponDate = new Date(code.validUpto);
+
+		if (currentDate <= couponDate) {
+			return code.discount;
+		}
+
+		return 0;
 	};
 }

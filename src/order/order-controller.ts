@@ -16,10 +16,29 @@ export class OrderController {
 			return next(createHttpError(400, result.array()[0].msg as string));
 		}
 
-		const totalPrice = await this.orderService.calculateTotal(req.body.cart);
+		const { cart, couponCode, tenantId } = req.body;
 
-		this.logger.info(`Order created with total price: ${totalPrice}`);
+		const totalPrice = await this.orderService.calculateTotal(cart);
 
-		res.json({ message: "Order created", orderTotal: totalPrice });
+		let discountPercentage = 0;
+
+		if (couponCode) {
+			discountPercentage = await this.orderService.getDiscountPercentage(
+				couponCode,
+				tenantId,
+			);
+		}
+
+		const discountAmount = Math.round((totalPrice * discountPercentage) / 100);
+
+		this.logger.info(
+			`Order created with total price: ${totalPrice}, discount: ${discountAmount}`,
+		);
+
+		res.json({
+			message: "Order created",
+			orderTotal: totalPrice,
+			discount: discountAmount,
+		});
 	};
 }
