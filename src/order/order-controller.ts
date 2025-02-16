@@ -34,9 +34,14 @@ export class OrderController {
 		const priceAfterDiscount = totalPrice - discountAmount;
 
 		// TODO: May be store in db for each Tenant
-		const TAXES_PERCENTAGE = 18;
+		const TAX_PERCENTAGE = 18;
 
-		const taxes = Math.round((priceAfterDiscount * TAXES_PERCENTAGE) / 100);
+		const taxes = Math.round((priceAfterDiscount * TAX_PERCENTAGE) / 100);
+
+		// TODO: May be store in db for each Tenant
+		const DELIVERY_CHARGE = 50;
+
+		const finalTotal = priceAfterDiscount + taxes + DELIVERY_CHARGE;
 
 		this.logger.info("Order created successfully", {});
 
@@ -45,6 +50,8 @@ export class OrderController {
 			subtotal: totalPrice,
 			discount: discountAmount,
 			tax: taxes,
+			deliveryCharge: DELIVERY_CHARGE,
+			orderTotal: finalTotal,
 		});
 	};
 }
