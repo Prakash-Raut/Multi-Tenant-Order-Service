@@ -1,8 +1,9 @@
 import type { NextFunction, Response } from "express";
 import type { Request } from "express-jwt";
+import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import type { Logger } from "winston";
-import type { AuthRequest } from "../common/types";
+import type { AuthRequest } from "../types";
 import type { CouponService } from "./coupon-service";
 
 export class CouponController {
@@ -12,6 +13,12 @@ export class CouponController {
 	) {}
 
 	create = async (req: Request, res: Response, next: NextFunction) => {
+		const result = validationResult(req);
+
+		if (!result.isEmpty()) {
+			return next(createHttpError(400, result.array()[0].msg as string));
+		}
+
 		const { title, code, discount, validUpto, tenantId } = req.body;
 
 		const coupon = await this.couponService.create({
@@ -26,6 +33,7 @@ export class CouponController {
 			return next(createHttpError(400, "Coupon not created"));
 		}
 
+		this.logger.info(`Coupon created: ${coupon._id}`);
 		res.json(coupon);
 	};
 

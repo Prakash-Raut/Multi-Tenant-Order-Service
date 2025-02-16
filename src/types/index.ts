@@ -28,7 +28,13 @@ export interface ProductMessage {
 	priceConfiguration: ProductPriceConfiguration;
 }
 
+export interface ToppingPriceCache {
+	toppingId: string;
+	price: number;
+}
+
 export interface ToppingMessage {
 	id: string;
 	price: number;
+	tenantId: string;
 }

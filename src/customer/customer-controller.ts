@@ -2,7 +2,7 @@ import type { NextFunction, Response } from "express";
 import type { Request } from "express-jwt";
 import createHttpError from "http-errors";
 import type { Logger } from "winston";
-import type { AuthRequest } from "../common/types";
+import type { AuthRequest } from "../types";
 import type { CustomerService } from "./customer-service";
 
 export class CustomerController {
