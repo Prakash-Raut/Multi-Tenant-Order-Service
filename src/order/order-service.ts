@@ -7,7 +7,7 @@ import {
 	type ToppingPricingCache,
 } from "../cache/topping/ToppingCacheModel";
 import { CouponModel } from "../coupon/coupon-model";
-import type { CartItem, Topping } from "./order-type";
+import type { CartItem, Topping } from "../types";
 
 export class OrderService {
 	/**
