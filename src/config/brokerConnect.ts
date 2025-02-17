@@ -1,6 +1,7 @@
 import { createMessageBroker } from "../common/factory/brokerFactory";
 import type { MessageBroker } from "../types/broker";
 import logger from "./logger";
+import { TOPIC } from "./topic";
 
 export const brokerConnect = async () => {
 	let messageBroker: MessageBroker | null = null;
@@ -8,7 +9,7 @@ export const brokerConnect = async () => {
 		messageBroker = createMessageBroker();
 
 		await messageBroker.connectConsumer();
-		await messageBroker.consumeMessage(["Product"], true);
+		await messageBroker.consumeMessage([TOPIC.PRODUCT], true);
 
 		logger.info("Kafka Consumer connected");
 	} catch (error) {

@@ -70,4 +70,27 @@ export default [
 		.optional()
 		.isString()
 		.withMessage("Hash must be a string if provided"),
+
+	body("tenantId")
+		.isString()
+		.notEmpty()
+		.withMessage("Tenant ID is required and must be a string"),
+
+	body("paymentMode")
+		.isIn(["card", "cash"])
+		.withMessage("Payment mode must be either 'card' or 'cash'"),
+
+	body("customerId")
+		.isMongoId()
+		.withMessage("Customer ID must be a valid MongoDB ObjectId"),
+
+	body("address")
+		.isString()
+		.notEmpty()
+		.withMessage("Address is required and must be a string"),
+
+	body("comment")
+		.optional()
+		.isString()
+		.withMessage("Comment must be a string if provided"),
 ];

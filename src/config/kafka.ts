@@ -2,6 +2,7 @@ import { type Consumer, type EachMessagePayload, Kafka } from "kafkajs";
 import { handleProductUpdate } from "../cache/product/handleProductUpdate";
 import { handleToppingUpdate } from "../cache/topping/handleToppingUpdate";
 import type { MessageBroker } from "../types/broker";
+import { TOPIC } from "./topic";
 
 /**
  * KafkaBroker class implements the MessageBroker interface to interact with Kafka.
@@ -60,10 +61,10 @@ export class KafkaBroker implements MessageBroker {
 				}
 
 				switch (topic) {
-					case "Product":
+					case TOPIC.PRODUCT:
 						await handleProductUpdate(message.value.toString());
 						return;
-					case "Topping":
+					case TOPIC.TOPPING:
 						await handleToppingUpdate(message.value.toString());
 						return;
 					default:
