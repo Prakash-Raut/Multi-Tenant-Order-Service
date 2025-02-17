@@ -3,7 +3,7 @@ import type { Request } from "express";
 import { type GetVerificationKey, expressjwt } from "express-jwt";
 import type { Jwt } from "jsonwebtoken";
 import jwksClient, { type SigningKey } from "jwks-rsa";
-import type { AuthCookie } from "../common/types";
+import type { AuthCookie } from "../types";
 
 const client = jwksClient({
 	jwksUri: config.get("auth.jwksUri"),
