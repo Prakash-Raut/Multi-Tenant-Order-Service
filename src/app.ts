@@ -6,6 +6,7 @@ import couponRouter from "./coupon/coupon-router";
 import customerRouter from "./customer/customer-router";
 import { globalErrorHandler } from "./middleware/globalErrorHandler";
 import orderRouter from "./order/order-router";
+import paymentRouter from "./payment/payment-router";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/customers", customerRouter);
 app.use("/coupons", couponRouter);
 app.use("/orders", orderRouter);
+app.use("/payments", paymentRouter);
 
 app.use(globalErrorHandler);
 

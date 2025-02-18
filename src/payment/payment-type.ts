@@ -14,11 +14,11 @@ interface PaymentSession {
 	paymentStatus: GatewayPaymentStatus;
 }
 
-interface CustomMetadata {
+export interface CustomMetadata {
 	orderId: string;
 }
 
-interface VerifiedPaymentSession {
+export interface VerifiedSession {
 	id: string;
 	metadata: CustomMetadata;
 	paymentStatus: GatewayPaymentStatus;
@@ -26,5 +26,5 @@ interface VerifiedPaymentSession {
 
 export interface PaymentGW {
 	createSession: (options: PaymentOptions) => Promise<PaymentSession>;
-	getSession: (sessionId: string) => Promise<VerifiedPaymentSession>;
+	getSession: (sessionId: string) => Promise<VerifiedSession>;
 }
