@@ -119,21 +119,21 @@ export class OrderController {
 		try {
 			const session = await this.paymentGW.createSession({
 				amount: finalTotal,
-				orderId: newOrder[0]._id.toString(),
+				orderId: newOrder[0]?._id?.toString(),
 				tenantId,
 				currency: "inr",
 				idempotencyKey,
 			});
 
 			this.logger.info("Order created successfully", {
-				orderId: newOrder[0]._id.toString(),
+				orderId: newOrder[0]?._id?.toString(),
 			});
 
 			res.json({ paymentUrl: session.paymentUrl, paymentId: session.id });
 		} catch (error) {
 			this.logger.error("Error creating payment session", {
 				error,
-				orderId: newOrder[0]._id.toString(),
+				orderId: newOrder[0]?._id?.toString(),
 			});
 			return next(createHttpError(500, "Error creating payment session"));
 		}
