@@ -9,7 +9,7 @@ export const brokerConnect = async () => {
 		messageBroker = createMessageBroker();
 
 		await messageBroker.connectConsumer();
-		await messageBroker.consumeMessage([TOPIC.PRODUCT], true);
+		await messageBroker.consumeMessage([TOPIC.PRODUCT, TOPIC.TOPPING], false);
 
 		logger.info("Kafka Consumer connected");
 	} catch (error) {

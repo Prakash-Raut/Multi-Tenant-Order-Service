@@ -13,7 +13,7 @@ const orderController = new OrderController(orderService, logger);
 orderRouter.post(
 	"/",
 	authenticate,
-	orderValidator,
+	// orderValidator,
 	asyncHandler(orderController.create),
 );
 

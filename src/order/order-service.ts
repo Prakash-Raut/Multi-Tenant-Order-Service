@@ -9,7 +9,7 @@ import {
 import { CouponModel } from "../coupon/coupon-model";
 import type { CartItem, Topping } from "../types";
 import { OrderModel } from "./order-model";
-import { CreateOrderRequest, type Order } from "./order-type";
+import type { Order } from "./order-type";
 
 export class OrderService {
 	/**
@@ -25,29 +25,13 @@ export class OrderService {
 			productId: { $in: productIds },
 		});
 
-		// Handle missing products in cache by fetching from catalog service
-		if (productPricing.length !== productIds.length) {
-			// TODO: Integrate a catalog service call
-			throw new Error("Some products are missing in cache");
-		}
-
 		const toppingIds: string[] = [];
 
 		for (const item of cart) {
-			for (const topping of item.chosenConfiguration.selectedToppings) {
-				toppingIds.push(topping.id);
+			for (const selectedTopping of item.chosenConfiguration.selectedToppings) {
+				toppingIds.push(selectedTopping._id);
 			}
 		}
-
-		// TC: O(n^2) - Can be optimized
-		// const toppingIds = cart.reduce<string[]>((acc, item) => {
-		// 	return [
-		// 		...acc,
-		// 		...item.chosenConfiguration.selectedToppings.map(
-		// 			(topping) => topping.id,
-		// 		),
-		// 	];
-		// }, []);
 
 		// Fetch topping pricing from cache
 		const toppingPricing = await ToppingCacheModel.find({
@@ -119,7 +103,7 @@ export class OrderService {
 		toppingPricing: ToppingPricingCache[],
 	): number => {
 		const currentTopping = toppingPricing.find(
-			(current) => current.toppingId === topping.id,
+			(current) => current.toppingId === topping._id,
 		);
 
 		if (!currentTopping) {

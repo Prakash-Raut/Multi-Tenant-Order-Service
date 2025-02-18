@@ -4,7 +4,6 @@ import { ToppingCacheModel } from "./ToppingCacheModel";
 export const handleToppingUpdate = async (value: string) => {
 	try {
 		const topping: ToppingMessage = JSON.parse(value);
-
 		await ToppingCacheModel.updateOne(
 			{ toppingId: topping.id },
 			{

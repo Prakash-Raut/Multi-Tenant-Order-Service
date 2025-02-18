@@ -1,13 +1,12 @@
-import { Schema, type Types, model } from "mongoose";
+import { Schema, model } from "mongoose";
 
 export interface ToppingPricingCache {
-	_id: Types.ObjectId;
 	toppingId: string;
 	price: number;
 	tenantId: string;
 }
 
-const toppingCacheModel = new Schema<ToppingPricingCache>({
+const toppingCacheSchema = new Schema<ToppingPricingCache>({
 	toppingId: {
 		type: String,
 		required: true,
@@ -24,6 +23,6 @@ const toppingCacheModel = new Schema<ToppingPricingCache>({
 
 export const ToppingCacheModel = model(
 	"ToppingCache",
-	toppingCacheModel,
+	toppingCacheSchema,
 	"toppingCache",
 );

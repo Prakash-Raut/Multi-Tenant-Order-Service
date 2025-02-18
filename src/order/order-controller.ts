@@ -16,10 +16,10 @@ export class OrderController {
 	) {}
 
 	create = async (req: Request, res: Response, next: NextFunction) => {
-		const result = validationResult(req);
-		if (!result.isEmpty()) {
-			return next(createHttpError(400, result.array()[0].msg as string));
-		}
+		// const result = validationResult(req);
+		// if (!result.isEmpty()) {
+		// 	return next(createHttpError(400, result.array()[0].msg as string));
+		// }
 
 		const {
 			cart,

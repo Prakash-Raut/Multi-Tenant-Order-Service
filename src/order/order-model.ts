@@ -8,10 +8,10 @@ import {
 } from "./order-type";
 
 const toppingSchema = new Schema<Topping>({
-	id: {
-		type: String,
-		required: true,
-	},
+	// id: {
+	// 	type: String,
+	// 	required: true,
+	// },
 	name: {
 		type: String,
 		required: true,
