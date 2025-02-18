@@ -1,3 +1,4 @@
+import type { ClientSession } from "mongoose";
 import {
 	ProductCacheModel,
 	type ProductPricingCache,
@@ -140,8 +141,8 @@ export class OrderService {
 		return 0;
 	};
 
-	createOrder = async (orderDetails: Order) => {
-		const order = await OrderModel.create(orderDetails);
+	createOrder = async (orderDetails: Order, session: ClientSession) => {
+		const order = await OrderModel.create([orderDetails], { session });
 		return order;
 	};
 }

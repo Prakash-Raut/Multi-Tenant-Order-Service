@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
+import mongoose from "mongoose";
 import type { Logger } from "winston";
+import { IdempotentModel } from "../idempotent/idempotent-model";
 import type { OrderService } from "./order-service";
 import {
 	type CreateOrderRequest,
@@ -56,24 +57,56 @@ export class OrderController {
 
 		const finalTotal = priceAfterDiscount + taxes + DELIVERY_CHARGE;
 
-		const newOrder = await this.orderService.createOrder({
-			cart,
-			taxes,
-			address,
-			comment,
-			tenantId,
-			customerId,
-			paymentMode,
-			total: finalTotal,
-			deliveryCharges: DELIVERY_CHARGE,
-			discount: discountAmount,
-			orderStatus: OrderStatus.RECEIVED,
-			paymentStatus: PaymentStatus.PENDING,
+		const idempotencyKey = req.headers["idempotency-key"] as string;
+
+		const idempotency = await IdempotentModel.findOne({
+			key: idempotencyKey,
 		});
 
-		this.logger.info("Order created successfully", {
-			orderId: newOrder._id,
-		});
+		let newOrder = {};
+
+		if (idempotency) {
+			newOrder = idempotency.response;
+		} else {
+			const session = await mongoose.startSession();
+			session.startTransaction();
+
+			try {
+				newOrder = await this.orderService.createOrder(
+					{
+						cart,
+						taxes,
+						address,
+						comment,
+						tenantId,
+						customerId,
+						paymentMode,
+						total: finalTotal,
+						deliveryCharges: DELIVERY_CHARGE,
+						discount: discountAmount,
+						orderStatus: OrderStatus.RECEIVED,
+						paymentStatus: PaymentStatus.PENDING,
+					},
+					session,
+				);
+
+				await IdempotentModel.create(
+					[{ key: idempotencyKey, response: newOrder[0] }],
+					{ session },
+				);
+
+				await session.commitTransaction();
+			} catch (error) {
+				await session.abortTransaction();
+				return next(createHttpError(500, { message: error }));
+			} finally {
+				await session.endSession();
+			}
+		}
+
+		// Payment Gateway Integration
+
+		this.logger.info("Order created successfully");
 
 		res.json(newOrder);
 	};
