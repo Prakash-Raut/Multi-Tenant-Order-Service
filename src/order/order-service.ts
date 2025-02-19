@@ -145,4 +145,10 @@ export class OrderService {
 		const order = await OrderModel.create([orderDetails], { session });
 		return order;
 	};
+
+	getOrdersByCustomerId = async (customerId: string) => {
+		// TODO: Add Pagination
+		const order = await OrderModel.find({ customerId }, { cart: 0 });
+		return order;
+	};
 }

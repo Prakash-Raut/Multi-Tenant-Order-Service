@@ -2,8 +2,10 @@ import type { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import type { Logger } from "winston";
+import type { CustomerService } from "../customer/customer-service";
 import { IdempotentModel } from "../idempotent/idempotent-model";
 import type { PaymentGW } from "../payment/payment-type";
+import type { AuthRequest } from "../types";
 import type { MessageBroker } from "../types/broker";
 import type { OrderService } from "./order-service";
 import {
@@ -19,6 +21,7 @@ export class OrderController {
 		private logger: Logger,
 		private paymentGW: PaymentGW,
 		private broker: MessageBroker,
+		private customerService: CustomerService,
 	) {}
 
 	create = async (req: Request, res: Response, next: NextFunction) => {
@@ -152,5 +155,31 @@ export class OrderController {
 			await this.broker.sendMessage("order", message);
 			res.json({ paymentUrl: null, paymentId: null });
 		}
+	};
+
+	getMyOrders = async (req: Request, res: Response, next: NextFunction) => {
+		const { sub } = (req as AuthRequest).auth;
+
+		if (!sub) {
+			return next(createHttpError(400, "User not found"));
+		}
+
+		const customer = await this.customerService.getCustomer(sub);
+
+		if (!customer) {
+			return next(createHttpError(400, "No customer found"));
+		}
+
+		const orders = await this.orderService.getOrdersByCustomerId(customer.id);
+
+		if (!orders) {
+			return next(createHttpError(400, "No orders found"));
+		}
+
+		this.logger.info("Orders retrieved successfully", {
+			customerId: customer.id,
+		});
+
+		res.json(orders);
 	};
 }
