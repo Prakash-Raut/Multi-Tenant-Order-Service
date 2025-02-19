@@ -20,6 +20,7 @@ export class StripeGW implements PaymentGW {
 				// customer_email: options.email,
 				metadata: {
 					orderId: options.orderId,
+					restaurantId: options.tenantId,
 				},
 				billing_address_collection: "required",
 				// TODO: Add dynamic customer details here
@@ -52,10 +53,14 @@ export class StripeGW implements PaymentGW {
 				mode: "payment",
 				success_url: `${config.get(
 					"frontend.client",
-				)}/payment/success=true&orderId=${options.orderId}`,
+				)}/payment/success=true&orderId=${
+					options.orderId
+				}&restaurantId=${options.tenantId}`,
 				cancel_url: `${config.get(
 					"frontend.client",
-				)}/payment/success=false&orderId=${options.orderId}`,
+				)}/payment/success=false&orderId=${
+					options.orderId
+				}&restaurantId=${options.tenantId}`,
 			},
 			{
 				idempotencyKey: options.idempotencyKey,
