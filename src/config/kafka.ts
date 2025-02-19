@@ -1,4 +1,9 @@
-import { type Consumer, type EachMessagePayload, Kafka } from "kafkajs";
+import {
+	type Consumer,
+	type EachMessagePayload,
+	Kafka,
+	type Producer,
+} from "kafkajs";
 import { handleProductUpdate } from "../cache/product/handleProductUpdate";
 import { handleToppingUpdate } from "../cache/topping/handleToppingUpdate";
 import type { MessageBroker } from "../types/broker";
@@ -8,10 +13,8 @@ import { TOPIC } from "./topic";
  * KafkaBroker class implements the MessageBroker interface to interact with Kafka.
  */
 export class KafkaBroker implements MessageBroker {
-	/**
-	 * The Kafka consumer instance.
-	 */
 	private consumer: Consumer;
+	private producer: Producer;
 
 	/**
 	 * Creates an instance of KafkaBroker.
@@ -21,6 +24,7 @@ export class KafkaBroker implements MessageBroker {
 	constructor(clientId: string, brokers: string[]) {
 		const kafka = new Kafka({ clientId, brokers });
 
+		this.producer = kafka.producer();
 		this.consumer = kafka.consumer({ groupId: clientId });
 	}
 
@@ -33,12 +37,30 @@ export class KafkaBroker implements MessageBroker {
 	};
 
 	/**
+	 * Connects the Kafka producer.
+	 * @returns A promise that resolves when the producer is connected.
+	 */
+	connectProducer = async () => {
+		await this.producer.connect();
+	};
+
+	/**
 	 * Disconnects the Kafka consumer.
 	 * @returns A promise that resolves when the consumer is disconnected.
 	 */
 	disconnectConsumer = async () => {
 		if (this.consumer) {
 			await this.consumer.disconnect();
+		}
+	};
+
+	/**
+	 * Disconnects the Kafka producer.
+	 * @returns A promise that resolves when the producer is disconnected.
+	 */
+	disconnectProducer = async () => {
+		if (this.producer) {
+			await this.producer.disconnect();
 		}
 	};
 
@@ -77,6 +99,19 @@ export class KafkaBroker implements MessageBroker {
 					partition,
 				});
 			},
+		});
+	};
+
+	/**
+	 * Sends a message to a specified Kafka topic.
+	 * @param topic - The topic to send the message to.
+	 * @param message - The message to send.
+	 * @returns A promise that resolves when the message is sent.
+	 */
+	sendMessage = async (topic: string, message: string) => {
+		await this.producer.send({
+			topic,
+			messages: [{ value: message }],
 		});
 	};
 }

@@ -7,17 +7,18 @@ export const brokerConnect = async () => {
 	let messageBroker: MessageBroker | null = null;
 	try {
 		messageBroker = createMessageBroker();
-
+		await messageBroker.connectProducer();
 		await messageBroker.connectConsumer();
 		await messageBroker.consumeMessage([TOPIC.PRODUCT, TOPIC.TOPPING], false);
 
-		logger.info("Kafka Consumer connected");
+		logger.info("Kafka connected");
 	} catch (error) {
 		if (error instanceof Error) {
-			logger.error("Error connecting to Kafka consumer: ", error.message);
+			logger.error("Error connecting to Kafka: ", error.message);
 			if (messageBroker) {
+				await messageBroker.disconnectProducer();
 				await messageBroker.disconnectConsumer();
-				logger.info("Kafka consumer disconnected due to error", {
+				logger.info("Kafka disconnected due to error", {
 					error: error.message,
 				});
 			}

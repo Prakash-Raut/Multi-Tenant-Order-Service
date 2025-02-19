@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import type { Logger } from "winston";
 import { IdempotentModel } from "../idempotent/idempotent-model";
 import type { PaymentGW } from "../payment/payment-type";
+import type { MessageBroker } from "../types/broker";
 import type { OrderService } from "./order-service";
 import {
 	type CreateOrderRequest,
@@ -17,6 +18,7 @@ export class OrderController {
 		private orderService: OrderService,
 		private logger: Logger,
 		private paymentGW: PaymentGW,
+		private broker: MessageBroker,
 	) {}
 
 	create = async (req: Request, res: Response, next: NextFunction) => {
@@ -127,6 +129,9 @@ export class OrderController {
 					idempotencyKey,
 				});
 
+				const message = JSON.stringify(newOrder);
+				await this.broker.sendMessage("order", message);
+
 				this.logger.info("Order created successfully", {
 					orderId: newOrder[0]?._id?.toString(),
 				});
@@ -143,6 +148,8 @@ export class OrderController {
 				return next(createHttpError(500, "Error creating payment session"));
 			}
 		} else {
+			const message = JSON.stringify(newOrder);
+			await this.broker.sendMessage("order", message);
 			res.json({ paymentUrl: null, paymentId: null });
 		}
 	};
