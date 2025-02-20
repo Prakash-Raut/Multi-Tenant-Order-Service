@@ -151,4 +151,9 @@ export class OrderService {
 		const order = await OrderModel.find({ customerId }, { cart: 0 });
 		return order;
 	};
+
+	getOrderById = async (orderId: string) => {
+		const order = await OrderModel.findOne({ _id: orderId });
+		return order;
+	};
 }

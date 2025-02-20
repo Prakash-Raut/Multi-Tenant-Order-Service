@@ -31,4 +31,10 @@ orderRouter.post(
 
 orderRouter.get("/me", authenticate, asyncHandler(orderController.getMyOrders));
 
+orderRouter.get(
+	"/:orderId",
+	authenticate,
+	asyncHandler(orderController.getSingle),
+);
+
 export default orderRouter;

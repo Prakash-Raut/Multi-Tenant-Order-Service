@@ -182,4 +182,52 @@ export class OrderController {
 
 		res.json(orders);
 	};
+
+	getSingle = async (req: Request, res: Response, next: NextFunction) => {
+		const { orderId } = req.params;
+		const { sub: userId, role, tenantId } = (req as AuthRequest).auth;
+
+		const order = await this.orderService.getOrderById(orderId);
+
+		if (!order) {
+			return next(createHttpError(400, "Order not found"));
+		}
+
+		if (role === "admin") {
+			this.logger.info("Order retrieved successfully", {
+				orderId: orderId,
+				role: "admin",
+			});
+			res.json(order);
+			return;
+		}
+
+		const myRestaurantOrder = order.tenantId === tenantId;
+
+		if (role === "manager" && myRestaurantOrder) {
+			this.logger.info("Order retrieved successfully", {
+				orderId: orderId,
+				role: "manager",
+			});
+			res.json(order);
+			return;
+		}
+
+		if (role === "customer") {
+			const customer = await this.customerService.getCustomer(userId);
+			if (!customer) {
+				return next(createHttpError(400, "No customer found"));
+			}
+			if (customer._id === order.customerId) {
+				this.logger.info("Order retrieved successfully", {
+					orderId: orderId,
+					role: "customer",
+				});
+				res.json(order);
+				return;
+			}
+		}
+
+		return next(createHttpError(403, "Unauthorized"));
+	};
 }
