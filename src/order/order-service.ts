@@ -1,4 +1,4 @@
-import type { ClientSession } from "mongoose";
+import type { ClientSession, ProjectionType } from "mongoose";
 import {
 	ProductCacheModel,
 	type ProductPricingCache,
@@ -152,8 +152,8 @@ export class OrderService {
 		return order;
 	};
 
-	getOrderById = async (orderId: string) => {
-		const order = await OrderModel.findOne({ _id: orderId });
+	getOrderById = async (orderId: string, projection: ProjectionType<Order>) => {
+		const order = await OrderModel.findOne({ _id: orderId }, projection);
 		return order;
 	};
 }

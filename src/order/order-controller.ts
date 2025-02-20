@@ -187,7 +187,16 @@ export class OrderController {
 		const { orderId } = req.params;
 		const { sub: userId, role, tenantId } = (req as AuthRequest).auth;
 
-		const order = await this.orderService.getOrderById(orderId);
+		const fields = req.query.fields
+			? req.query.fields.toString().split(",")
+			: [];
+
+		const projection = fields.reduce((acc, field) => {
+			acc[field] = 1;
+			return acc;
+		}, {});
+
+		const order = await this.orderService.getOrderById(orderId, projection);
 
 		if (!order) {
 			return next(createHttpError(400, "Order not found"));
