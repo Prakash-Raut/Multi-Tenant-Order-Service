@@ -159,18 +159,18 @@ export class OrderService {
 		return order;
 	};
 
-	getAllOrders = async (
-		filter: GetAllOrdersFilter = {},
-		tenantId?: string,
-	): Promise<Order[]> => {
+	getAllOrders = async (filter: GetAllOrdersFilter = {}): Promise<Order[]> => {
 		// TODO: Add Pagination
 
-		const orders = await OrderModel.find(
-			{ tenantId: filter.tenantId ?? tenantId },
-			{
-				cart: 0,
-			},
-		)
+		const query: { tenantId?: string } = {};
+
+		if (filter.tenantId) {
+			query.tenantId = filter.tenantId;
+		}
+
+		const orders = await OrderModel.find(query, {
+			cart: 0,
+		})
 			.sort({ createdAt: -1 })
 			.populate("customerId")
 			.exec();

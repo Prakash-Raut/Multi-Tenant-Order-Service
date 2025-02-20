@@ -255,32 +255,52 @@ export class OrderController {
 			return next(createHttpError(403, "Customer not allowed"));
 		}
 
+		const filter: { tenantId?: string } = {};
+
 		if (role === Roles.ADMIN) {
-			const filter: { tenantId?: string } = {};
+			// Admin can filter by any tenantId, or get all if not specified
 			if (tenantId) {
 				filter.tenantId = tenantId;
 			}
-			const orders = await this.orderService.getAllOrders({ filter: filter });
-
-			this.logger.info("Orders retrieved successfully", {
-				role: "admin",
-			});
-
-			res.json(orders);
-			return;
+		} else if (role === Roles.MANAGER) {
+			// Manager can only see orders for their tenantId
+			filter.tenantId = userTenantId;
 		}
 
-		if (role === Roles.MANAGER) {
-			const orders = await this.orderService.getAllOrders({
-				tenantId: userTenantId,
-			});
+		const orders = await this.orderService.getAllOrders(filter);
 
-			this.logger.info("Orders retrieved successfully", {
-				role: "manager",
-			});
+		this.logger.info("Orders retrieved successfully", {
+			role: role.toLowerCase(),
+		});
 
-			res.json(orders);
-			return;
-		}
+		res.json(orders);
+
+		// if (role === Roles.ADMIN) {
+		// 	const filter: { tenantId?: string } = {};
+		// 	if (tenantId) {
+		// 		filter.tenantId = tenantId;
+		// 	}
+		// 	const orders = await this.orderService.getAllOrders({ filter: filter });
+
+		// 	this.logger.info("Orders retrieved successfully", {
+		// 		role: "admin",
+		// 	});
+
+		// 	res.json(orders);
+		// 	return;
+		// }
+
+		// if (role === Roles.MANAGER) {
+		// 	const orders = await this.orderService.getAllOrders({
+		// 		tenantId: userTenantId,
+		// 	});
+
+		// 	this.logger.info("Orders retrieved successfully", {
+		// 		role: "manager",
+		// 	});
+
+		// 	res.json(orders);
+		// 	return;
+		// }
 	};
 }
