@@ -153,7 +153,9 @@ export class OrderService {
 	};
 
 	getOrderById = async (orderId: string, projection: ProjectionType<Order>) => {
-		const order = await OrderModel.findOne({ _id: orderId }, projection);
+		const order = await OrderModel.findOne({ _id: orderId }, projection)
+			.populate("customerId")
+			.exec();
 		return order;
 	};
 }

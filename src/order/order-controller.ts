@@ -191,10 +191,15 @@ export class OrderController {
 			? req.query.fields.toString().split(",")
 			: [];
 
-		const projection = fields.reduce((acc, field) => {
-			acc[field] = 1;
-			return acc;
-		}, {});
+		const projection = fields.reduce(
+			(acc, field) => {
+				acc[field] = 1;
+				return acc;
+			},
+			{
+				customerId: 1,
+			},
+		);
 
 		const order = await this.orderService.getOrderById(orderId, projection);
 
@@ -227,7 +232,7 @@ export class OrderController {
 			if (!customer) {
 				return next(createHttpError(400, "No customer found"));
 			}
-			if (customer._id === order.customerId) {
+			if (customer._id === order.customerId._id) {
 				this.logger.info("Order retrieved successfully", {
 					orderId: orderId,
 					role: "customer",
