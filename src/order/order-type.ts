@@ -1,4 +1,4 @@
-import type { Types } from "mongoose";
+import type { FilterQuery, Types } from "mongoose";
 import type { CartItem } from "../types";
 
 export enum PaymentMode {
@@ -45,3 +45,5 @@ export interface CreateOrderRequest {
 	address: string;
 	comment?: string;
 }
+
+export type GetAllOrdersFilter = FilterQuery<Order>;

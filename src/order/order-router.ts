@@ -37,4 +37,6 @@ orderRouter.get(
 	asyncHandler(orderController.getSingle),
 );
 
+orderRouter.get("/", authenticate, asyncHandler(orderController.getAll));
+
 export default orderRouter;

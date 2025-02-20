@@ -10,7 +10,7 @@ import {
 import { CouponModel } from "../coupon/coupon-model";
 import type { CartItem, Topping } from "../types";
 import { OrderModel } from "./order-model";
-import type { Order } from "./order-type";
+import type { GetAllOrdersFilter, Order } from "./order-type";
 
 export class OrderService {
 	/**
@@ -157,5 +157,24 @@ export class OrderService {
 			.populate("customerId")
 			.exec();
 		return order;
+	};
+
+	getAllOrders = async (
+		filter: GetAllOrdersFilter = {},
+		tenantId?: string,
+	): Promise<Order[]> => {
+		// TODO: Add Pagination
+
+		const orders = await OrderModel.find(
+			{ tenantId: filter.tenantId ?? tenantId },
+			{
+				cart: 0,
+			},
+		)
+			.sort({ createdAt: -1 })
+			.populate("customerId")
+			.exec();
+
+		return orders;
 	};
 }

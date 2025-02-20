@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import type { Logger } from "winston";
+import { Roles } from "../constants";
 import type { CustomerService } from "../customer/customer-service";
 import { IdempotentModel } from "../idempotent/idempotent-model";
 import type { PaymentGW } from "../payment/payment-type";
@@ -207,7 +208,7 @@ export class OrderController {
 			return next(createHttpError(400, "Order not found"));
 		}
 
-		if (role === "admin") {
+		if (role === Roles.ADMIN) {
 			this.logger.info("Order retrieved successfully", {
 				orderId: orderId,
 				role: "admin",
@@ -218,7 +219,7 @@ export class OrderController {
 
 		const myRestaurantOrder = order.tenantId === tenantId;
 
-		if (role === "manager" && myRestaurantOrder) {
+		if (role === Roles.MANAGER && myRestaurantOrder) {
 			this.logger.info("Order retrieved successfully", {
 				orderId: orderId,
 				role: "manager",
@@ -227,7 +228,7 @@ export class OrderController {
 			return;
 		}
 
-		if (role === "customer") {
+		if (role === Roles.CUSTOMER) {
 			const customer = await this.customerService.getCustomer(userId);
 			if (!customer) {
 				return next(createHttpError(400, "No customer found"));
@@ -243,5 +244,43 @@ export class OrderController {
 		}
 
 		return next(createHttpError(403, "Unauthorized"));
+	};
+
+	getAll = async (req: Request, res: Response, next: NextFunction) => {
+		const { role, tenantId: userTenantId } = (req as AuthRequest).auth;
+
+		const tenantId = req.query.tenantId as string;
+
+		if (role === Roles.CUSTOMER) {
+			return next(createHttpError(403, "Customer not allowed"));
+		}
+
+		if (role === Roles.ADMIN) {
+			const filter: { tenantId?: string } = {};
+			if (tenantId) {
+				filter.tenantId = tenantId;
+			}
+			const orders = await this.orderService.getAllOrders({ filter: filter });
+
+			this.logger.info("Orders retrieved successfully", {
+				role: "admin",
+			});
+
+			res.json(orders);
+			return;
+		}
+
+		if (role === Roles.MANAGER) {
+			const orders = await this.orderService.getAllOrders({
+				tenantId: userTenantId,
+			});
+
+			this.logger.info("Orders retrieved successfully", {
+				role: "manager",
+			});
+
+			res.json(orders);
+			return;
+		}
 	};
 }
