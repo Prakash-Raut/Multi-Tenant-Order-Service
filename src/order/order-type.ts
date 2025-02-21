@@ -49,8 +49,8 @@ export interface CreateOrderRequest {
 export type GetAllOrdersFilter = FilterQuery<Order>;
 
 export enum OrderEvents {
-	ORDER_CREATE = "order_create",
-	ORDER_UPDATE = "order_update",
-	PAYMENT_STATUS_UPDATE = "payment_status_update",
-	ORDER_STATUS_UPDATE = "order_status_update",
+	ORDER_CREATE = "ORDER_CREATE",
+	ORDER_UPDATE = "ORDER_UPDATE",
+	PAYMENT_STATUS_UPDATE = "PAYMENT_STATUS_UPDATE",
+	ORDER_STATUS_UPDATE = "ORDER_STATUS_UPDATE",
 }
