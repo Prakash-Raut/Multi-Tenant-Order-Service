@@ -12,6 +12,7 @@ import type { MessageBroker } from "../types/broker";
 import type { OrderService } from "./order-service";
 import {
 	type CreateOrderRequest,
+	OrderEvents,
 	OrderStatus,
 	PaymentMode,
 	PaymentStatus,
@@ -134,8 +135,17 @@ export class OrderController {
 					idempotencyKey,
 				});
 
-				const message = JSON.stringify(newOrder);
-				await this.broker.sendMessage("order", message);
+				const brokerMessage = {
+					eventType: OrderEvents.ORDER_CREATE,
+					data: newOrder[0],
+				};
+
+				const message = JSON.stringify(brokerMessage);
+				await this.broker.sendMessage(
+					"order",
+					message,
+					newOrder[0]._id?.toString(),
+				);
 
 				this.logger.info("Order created successfully", {
 					orderId: newOrder[0]?._id?.toString(),
@@ -153,8 +163,16 @@ export class OrderController {
 				return next(createHttpError(500, "Error creating payment session"));
 			}
 		} else {
-			const message = JSON.stringify(newOrder);
-			await this.broker.sendMessage("order", message);
+			const brokerMessage = {
+				eventType: OrderEvents.ORDER_CREATE,
+				data: newOrder[0],
+			};
+			const message = JSON.stringify(brokerMessage);
+			await this.broker.sendMessage(
+				"order",
+				message,
+				newOrder[0]._id?.toString(),
+			);
 			res.json({ paymentUrl: null, paymentId: null });
 		}
 	};

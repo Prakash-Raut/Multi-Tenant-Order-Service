@@ -108,10 +108,18 @@ export class KafkaBroker implements MessageBroker {
 	 * @param message - The message to send.
 	 * @returns A promise that resolves when the message is sent.
 	 */
-	sendMessage = async (topic: string, message: string) => {
+	sendMessage = async (topic: string, message: string, key?: string) => {
+		const data: { value: string; key?: string } = {
+			value: message,
+		};
+
+		if (key) {
+			data.key = key;
+		}
+
 		await this.producer.send({
 			topic,
-			messages: [{ value: message }],
+			messages: [data],
 		});
 	};
 }

@@ -3,7 +3,7 @@ import createHttpError from "http-errors";
 import mongoose, { type ObjectId } from "mongoose";
 import type { Logger } from "winston";
 import { OrderModel } from "../order/order-model";
-import { type Order, PaymentStatus } from "../order/order-type";
+import { type Order, OrderEvents, PaymentStatus } from "../order/order-type";
 import type { MessageBroker } from "../types/broker";
 import type { PaymentGW } from "./payment-type";
 
@@ -101,10 +101,14 @@ export class PaymentController {
 
 	// Publish order update event to message broker
 	private async publishOrderUpdate(order: Order & { _id: ObjectId }) {
+		const brokerMessage = {
+			eventType: OrderEvents.PAYMENT_STATUS_UPDATE,
+			data: order,
+		};
 		const message = JSON.stringify(order);
 		for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
 			try {
-				await this.broker.sendMessage("order", message);
+				await this.broker.sendMessage("order", message, order._id?.toString());
 				this.logger.info("Order message published", {
 					orderId: order._id,
 				});
