@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import type { Logger } from "winston";
@@ -274,33 +275,51 @@ export class OrderController {
 		});
 
 		res.json(orders);
+	};
 
-		// if (role === Roles.ADMIN) {
-		// 	const filter: { tenantId?: string } = {};
-		// 	if (tenantId) {
-		// 		filter.tenantId = tenantId;
-		// 	}
-		// 	const orders = await this.orderService.getAllOrders({ filter: filter });
+	changeStatus = async (req: Request, res: Response, next: NextFunction) => {
+		const { role, tenantId } = (req as AuthRequest).auth;
+		const { orderId } = req.params;
 
-		// 	this.logger.info("Orders retrieved successfully", {
-		// 		role: "admin",
-		// 	});
+		if (role !== Roles.ADMIN && role !== Roles.MANAGER) {
+			return next(createHttpError(403, "Unauthorized"));
+		}
 
-		// 	res.json(orders);
-		// 	return;
-		// }
+		const result = validationResult(req.body);
 
-		// if (role === Roles.MANAGER) {
-		// 	const orders = await this.orderService.getAllOrders({
-		// 		tenantId: userTenantId,
-		// 	});
+		if (!result.isEmpty()) {
+			return next(createHttpError(400, result.array()[0].msg as string));
+		}
 
-		// 	this.logger.info("Orders retrieved successfully", {
-		// 		role: "manager",
-		// 	});
+		const { status } = req.body;
 
-		// 	res.json(orders);
-		// 	return;
-		// }
+		const order = await this.orderService.getOrderById(orderId);
+
+		if (!order) {
+			return next(createHttpError(400, "Order not found"));
+		}
+
+		const isMyRestaurantOrder = order.tenantId === tenantId;
+
+		if (role === Roles.MANAGER && !isMyRestaurantOrder) {
+			return next(
+				createHttpError(
+					403,
+					"Managers can only change the status of orders from their own restaurant",
+				),
+			);
+		}
+
+		const updatedOrder = await this.orderService.changeOrderStatus(
+			orderId,
+			status,
+		);
+
+		this.logger.info("Order status changed successfully", {
+			orderId,
+			status,
+		});
+
+		res.json({ message: "Order status changed" });
 	};
 }

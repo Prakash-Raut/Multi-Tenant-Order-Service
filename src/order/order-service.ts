@@ -10,7 +10,7 @@ import {
 import { CouponModel } from "../coupon/coupon-model";
 import type { CartItem, Topping } from "../types";
 import { OrderModel } from "./order-model";
-import type { GetAllOrdersFilter, Order } from "./order-type";
+import type { GetAllOrdersFilter, Order, OrderStatus } from "./order-type";
 
 export class OrderService {
 	/**
@@ -152,7 +152,10 @@ export class OrderService {
 		return order;
 	};
 
-	getOrderById = async (orderId: string, projection: ProjectionType<Order>) => {
+	getOrderById = async (
+		orderId: string,
+		projection?: ProjectionType<Order>,
+	) => {
 		const order = await OrderModel.findOne({ _id: orderId }, projection)
 			.populate("customerId")
 			.exec();
@@ -176,5 +179,15 @@ export class OrderService {
 			.exec();
 
 		return orders;
+	};
+
+	changeOrderStatus = async (orderId: string, status: string) => {
+		const order = await OrderModel.findByIdAndUpdate(
+			orderId,
+			{ orderStatus: status as OrderStatus },
+			{ new: true },
+		);
+
+		return order;
 	};
 }

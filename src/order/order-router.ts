@@ -8,6 +8,7 @@ import authenticate from "../middleware/authenticate";
 import { asyncHandler } from "../utils";
 import { OrderController } from "./order-controller";
 import { OrderService } from "./order-service";
+import orderStatusValidator from "./order-status-validator";
 
 const orderRouter = Router();
 const orderService = new OrderService();
@@ -38,5 +39,12 @@ orderRouter.get(
 );
 
 orderRouter.get("/", authenticate, asyncHandler(orderController.getAll));
+
+orderRouter.patch(
+	"/change-status/:orderId",
+	authenticate,
+	orderStatusValidator,
+	asyncHandler(orderController.changeStatus),
+);
 
 export default orderRouter;
