@@ -135,9 +135,20 @@ export class OrderController {
 					idempotencyKey,
 				});
 
+				const customer = await this.customerService.getCustomer(
+					newOrder[0].customerId,
+				);
+
+				if (!customer) {
+					return next(createHttpError(400, "No customer found"));
+				}
+
 				const brokerMessage = {
 					eventType: OrderEvents.ORDER_CREATE,
-					data: newOrder[0],
+					data: {
+						...newOrder[0],
+						customerId: customer,
+					},
 				};
 
 				const message = JSON.stringify(brokerMessage);
@@ -331,6 +342,34 @@ export class OrderController {
 		const updatedOrder = await this.orderService.changeOrderStatus(
 			orderId,
 			status,
+		);
+
+		if (!updatedOrder) {
+			return next(createHttpError(400, "Order status not changed"));
+		}
+
+		const customer = await this.customerService.getCustomer(
+			updatedOrder[0].customerId,
+		);
+
+		if (!customer) {
+			return next(createHttpError(400, "No customer found"));
+		}
+
+		const brokerMessage = {
+			eventType: OrderEvents.ORDER_STATUS_UPDATE,
+			data: {
+				...updatedOrder.toObject(),
+				customerId: customer,
+			},
+		};
+
+		const message = JSON.stringify(brokerMessage);
+
+		await this.broker.sendMessage(
+			"order",
+			message,
+			updatedOrder[0]._id?.toString(),
 		);
 
 		this.logger.info("Order status changed successfully", {

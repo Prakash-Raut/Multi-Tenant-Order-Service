@@ -24,14 +24,20 @@ export interface ProductPriceConfiguration {
 }
 
 export interface ProductMessage {
-	id: string;
-	priceConfiguration: ProductPriceConfiguration;
+	event_type: ProductEvents;
+	data: {
+		id: string;
+		priceConfiguration: ProductPriceConfiguration;
+	};
 }
 
 export interface ToppingMessage {
-	id: string;
-	price: number;
-	tenantId: string;
+	event_type: ToppingEvents;
+	data: {
+		id: string;
+		price: number;
+		tenantId: string;
+	};
 }
 
 export interface Product {
@@ -59,4 +65,16 @@ export interface CartItem
 	};
 	qty: number;
 	hash?: string;
+}
+
+export enum ProductEvents {
+	PRODUCT_CREATE = "product_create",
+	PRODUCT_UPDATE = "product_update",
+	PRODUCT_DELETE = "product_delete",
+}
+
+export enum ToppingEvents {
+	TOPPING_CREATE = "topping_create",
+	TOPPING_UPDATE = "topping_update",
+	TOPPING_DELETE = "topping_delete",
 }
