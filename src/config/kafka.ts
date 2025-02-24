@@ -1,7 +1,9 @@
+import config from "config";
 import {
 	type Consumer,
 	type EachMessagePayload,
 	Kafka,
+	type KafkaConfig,
 	type Producer,
 } from "kafkajs";
 import { handleProductUpdate } from "../cache/product/handleProductUpdate";
@@ -22,7 +24,25 @@ export class KafkaBroker implements MessageBroker {
 	 * @param brokers - An array of broker addresses.
 	 */
 	constructor(clientId: string, brokers: string[]) {
-		const kafka = new Kafka({ clientId, brokers });
+		let kafkaConfig: KafkaConfig = {
+			clientId,
+			brokers,
+		};
+
+		if (config.get("server.nodeEnv") === "production") {
+			kafkaConfig = {
+				...kafkaConfig,
+				ssl: true,
+				connectionTimeout: 45000,
+				sasl: {
+					mechanism: "plain",
+					username: config.get("kafka.sasl.username"),
+					password: config.get("kafka.sasl.password"),
+				},
+			};
+		}
+
+		const kafka = new Kafka(kafkaConfig);
 
 		this.producer = kafka.producer();
 		this.consumer = kafka.consumer({ groupId: clientId });
