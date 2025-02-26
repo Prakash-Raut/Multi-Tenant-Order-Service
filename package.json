@@ -3,8 +3,11 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"check": "npx @biomejs/biome check --write .",
 		"dev": "cross-env NODE_ENV=development nodemon src/index.ts",
+		"build": "tsc",
+		"format": "npx @biomejs/biome format --write",
+		"lint": "npx @biomejs/biome lint --write .",
+		"check": "npx @biomejs/biome check --write .",
 		"prepare": "husky"
 	},
 	"keywords": [],
@@ -49,3 +52,4 @@
 		"winston": "^3.17.0"
 	}
 }
+
