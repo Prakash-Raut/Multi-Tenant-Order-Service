@@ -8,10 +8,6 @@ import {
 } from "./order-type";
 
 const toppingSchema = new Schema<Topping>({
-	// id: {
-	// 	type: String,
-	// 	required: true,
-	// },
 	name: {
 		type: String,
 		required: true,
@@ -61,12 +57,10 @@ const cartSchema = new Schema<CartItem>({
 			of: String,
 			required: true,
 		},
-		selectedToppings: [
-			{
-				type: [toppingSchema],
-				required: true,
-			},
-		],
+		selectedToppings: {
+			type: [toppingSchema],
+			required: true,
+		},
 	},
 });
 
