@@ -9,10 +9,13 @@ import orderRouter from "./order/order-router";
 import paymentRouter from "./payment/payment-router";
 
 const app = express();
-
+const ALLOWED_DOMAINS: string[] = [
+	config.get("frontend.client"),
+	config.get("frontend.admin"),
+];
 app.use(
 	cors({
-		origin: config.get("client.url"),
+		origin: ALLOWED_DOMAINS,
 		credentials: true,
 	}),
 );

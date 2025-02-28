@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development nodemon src/index.ts",
 		"build": "tsc",
+		"start": "cross-env NODE_ENV=production node dist/src/index.js",
 		"format": "npx @biomejs/biome format --write",
 		"lint": "npx @biomejs/biome lint --write .",
 		"check": "npx @biomejs/biome check --write .",
