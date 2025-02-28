@@ -1,7 +1,7 @@
 import config from "config";
 import type { NextFunction, Request, Response } from "express";
 import type { HttpError } from "http-errors";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from "uuid";
 import logger from "../config/logger";
 
 export const globalErrorHandler = (
@@ -10,7 +10,7 @@ export const globalErrorHandler = (
 	res: Response,
 	next: NextFunction,
 ) => {
-	const errorId = nanoid();
+	const errorId = uuidv4();
 	const statusCode = err.statusCode || err.status || 500;
 	const isProduction = config.get("server.nodeEnv") === "production";
 	const message = isProduction ? "Internal Server Error" : err.message;
