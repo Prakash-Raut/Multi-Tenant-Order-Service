@@ -35,7 +35,7 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     npm ci --omit=dev --ignore-scripts
 
 # Copy built files from the builder stage
-COPY --from=builder --chown=node:node /home/node/app/dist ./
+COPY --from=builder --chown=node:node /home/node/app/dist /home/node/app/dist
 
 EXPOSE 5501
 
